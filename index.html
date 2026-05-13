@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SDAPP Task Tracker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-title">⬡ SDAPP Task Tracker</div>
+  <div class="topbar-right">
+    <span id="fileName">No file loaded</span>
+    <label class="upload-btn" for="csvFile">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload CSV
+    </label>
+    <input type="file" id="csvFile" accept=".csv">
+    <button class="icon-btn" onclick="openSettings()" title="Settings">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    </button>
+  </div>
+</div>
+<div class="filters-bar">
+  <div class="filter-group">
+    <label for="yearFilter">Year</label>
+    <select id="yearFilter"><option value="">—</option></select>
+  </div>
+  <div class="filter-group" id="monthFilterWrap" style="position:relative">
+    <label>Month</label>
+    <div class="month-dd-btn" onclick="toggleMonthDD()">
+      <span id="monthBtnLabel">All Months</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="month-dd-panel" id="monthDropdown">
+      <div class="month-dd-header">
+        <span onclick="selectAllMonths()">All</span>
+        <span style="color:var(--text3)">·</span>
+        <span onclick="clearMonths()">Clear</span>
+      </div>
+      <div id="monthCheckList"></div>
+    </div>
+  </div>
+  <div class="filter-group">
+    <label for="dayFilter">Day</label>
+    <select id="dayFilter"><option value="All">All Days</option></select>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <label for="teamFilter">Team</label>
+    <select id="teamFilter"><option value="All">All Teams</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Daily Limit</label>
+    <div class="toggle-wrap">
+      <div class="toggle" id="toggleBtn" onclick="toggleDailyLimit()" style="background:var(--accent)">
+        <div class="toggle-thumb" id="toggleThumb" style="left:16px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Search order / person…">
+  </div>
+</div>
+<div class="main">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span>Task Owners</span>
+      <span id="ownerCount" style="color:var(--accent);font-size:11px">0</span>
+    </div>
+    <div class="person-list" id="personList"></div>
+  </div>
+  <div class="content" id="contentArea">
+    <div class="empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span>Upload a CSV file to get started</span>
+      <span style="font-size:10px;color:var(--text3)">Then select a person from the sidebar</span>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">⚙ Settings — Teams, Members &amp; Limits</span>
+      <button class="modal-close" onclick="closeSettings()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="token-row">
+        <span class="token-label">GitHub Token</span>
+        <input type="password" class="token-input" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxx" autocomplete="off">
+        <button class="btn btn-secondary btn-sm" onclick="saveTokenLocally()">Save locally</button>
+        <span id="tokenStatus" style="font-size:11px;font-family:var(--mono)"></span>
+      </div>
+      <p class="token-note">Token is stored only in your browser (localStorage). Required only when saving changes. Each admin uses their own token.</p>
+      <div id="teamsEditor"></div>
+      <button class="btn btn-secondary" onclick="addTeam()" style="margin-top:4px">+ Add Team</button>
+    </div>
+    <div class="modal-footer">
+      <span class="save-status" id="saveStatus"></span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
+        <button class="btn btn-primary" id="saveBtn" onclick="saveToGitHub()">Save to GitHub</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/config.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/sidebar.js"></script>
+<script src="js/detail.js"></script>
+<script src="js/settings.js"></script>
+<script>init();</script>
+</body>
+</html>

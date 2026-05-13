@@ -1,0 +1,47 @@
+{
+  "teams": {
+    "FTTT": {
+      "limit": 7,
+      "members": [
+        "Fitim Ahmeti",
+        "Shpend Ajeti",
+        "Festim Asllani",
+        "Tim Corey",
+        "Vlora Ibrahimi",
+        "Vanja Petrushevski",
+        "Edi Sermaxhaj",
+        "Ermal Shala"
+      ]
+    },
+    "Data": {
+      "limit": 10,
+      "members": [
+        "Berat Gubavci",
+        "Besar Ahmeti",
+        "Fitore Behrami",
+        "Arlinda Neziri",
+        "Jetart Aliu",
+        "Melos Doberdoli",
+        "Genc Ajeti",
+        "Lendrit Islami",
+        "Furkan Mani",
+        "Petar Siljanoski",
+        "Maksim Babovikj"
+      ]
+    },
+    "CDE": {
+      "limit": 12,
+      "members": [
+        "Burim Shala",
+        "Rina Ademi",
+        "Zaim Shaqiri",
+        "Vllaznim Shaljani",
+        "Adelina Neziri",
+        "Jon Barnett",
+        "Fatlum Rashiti",
+        "Arianit Plakaj",
+        "Agnesa Haxholli"
+      ]
+    }
+  }
+}
