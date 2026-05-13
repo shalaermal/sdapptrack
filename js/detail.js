@@ -168,7 +168,7 @@ function renderDetail(name) {
       <div class="stat-card"><div class="stat-label">Avg Tasks / Day</div><div class="stat-val">${avgPerDay}</div></div>
       <div class="stat-card"><div class="stat-label">SLA On-Time</div><div class="stat-val ${slaPct >= 70 ? 'green' : 'red'}">${slaPct}%</div></div>
       <div class="stat-card"><div class="stat-label">Escalated</div><div class="stat-val ${esc.length > 0 ? 'warn' : ''}">${esc.length}</div></div>
-      <div class="stat-card"><div class="stat-label">Picked Unassigned</div><div class="stat-val">${picked.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Picked Unassigned Escalated</div><div class="stat-val">${picked.length}</div></div>
     </div>
 
     <div class="charts-row">

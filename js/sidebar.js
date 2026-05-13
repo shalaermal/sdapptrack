@@ -28,7 +28,7 @@ function renderSidebar() {
            onclick="selectOwner('${name.replace(/'/g, "\\'")}')">
         <div>
           <div class="person-name">${name}</div>
-          <div class="person-meta">${team} · SLA ${slaPct}% · lim ${lim}</div>
+          <div class="person-meta">${team} · SLA ${slaPct}%</div>
         </div>
         <div class="person-badge">${tasks.length}</div>
       </div>`;
