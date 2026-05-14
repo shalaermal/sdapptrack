@@ -81,11 +81,15 @@ function isEscalated(t) {
       || (t['Service Delivery Order - Escalated Order?'] || '').toLowerCase() === 'yes';
 }
 
+const SLA_DAYS = 4;
+
 function slaStatus(t) {
-  const ready    = parseDate(t['Ready Date']);
+  const assign   = parseDate(t['Task Assignment Date']);
   const complete = parseDate(t['Actual Complete Date']);
-  if (!ready || !complete) return 'unknown';
-  return complete <= ready ? 'ok' : 'late';
+  if (!assign || !complete) return 'unknown';
+
+  const deadline = new Date(assign.getTime() + SLA_DAYS * 864e5);
+  return complete <= deadline ? 'ok' : 'late';
 }
 
 /**
