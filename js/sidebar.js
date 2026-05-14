@@ -18,17 +18,15 @@ function renderSidebar() {
   }
 
   list.innerHTML = sorted.map(([name, tasks]) => {
-    const slaOk  = tasks.filter(t => slaStatus(t) === 'ok').length;
-    const slaPct = Math.round(slaOk / tasks.length * 100);
-    const lim    = getLimit(name);
-    const team   = getTeam(name);
+    const avgPerDay = calcAvgPerDay(tasks);
+    const team      = getTeam(name);
 
     return `
       <div class="person-card ${selectedOwner === name ? 'active' : ''}"
            onclick="selectOwner('${name.replace(/'/g, "\\'")}')">
         <div>
           <div class="person-name">${name}</div>
-          <div class="person-meta">${team} · SLA ${slaPct}%</div>
+          <div class="person-meta">${team} · Avg ${avgPerDay}/day</div>
         </div>
         <div class="person-badge">${tasks.length}</div>
       </div>`;
