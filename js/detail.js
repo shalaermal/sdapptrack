@@ -228,6 +228,7 @@ function renderDetail(name) {
     <div class="section-title">Monthly Trend by Task Group</div>
     <div class="chart-card" style="margin-bottom:12px">
       <h4>Completed tasks per month — full history, grouped by type</h4>
+      <div id="chartTrendLegend" class="chart-legend"></div>
       <div class="chart-wrap" style="height:240px"><canvas id="chartTrend"></canvas></div>
     </div>
 
@@ -337,10 +338,7 @@ function buildCharts(tasks, typeCounts, perDay, limit, name) {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: {
-          display: true, position: 'top',
-          labels: { color: '#8892a4', font: { size: 10 }, boxWidth: 10, padding: 12 }
-        }
+        legend: { display: false }
       },
       scales: {
         x: { ticks: { color: '#4a5568', font: { size: 9 }, maxRotation: 45, autoSkip: false }, grid: { color: '#1e2433' } },
@@ -348,6 +346,27 @@ function buildCharts(tasks, typeCounts, perDay, limit, name) {
       }
     }
   });
+
+  const legendEl = document.getElementById('chartTrendLegend');
+  if (legendEl) {
+    legendEl.innerHTML = datasets.map((ds, i) => `
+      <div class="chart-legend-item${ds.hidden ? ' disabled' : ''}" data-idx="${i}">
+        <span class="chart-legend-swatch" style="background:${CHART_COLORS[i]}"></span>
+        ${ds.label}
+      </div>
+    `).join('');
+
+    legendEl.querySelectorAll('.chart-legend-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const index = Number(item.dataset.idx);
+        const meta = charts.trend.getDatasetMeta(index);
+        meta.hidden = meta.hidden === null ? !charts.trend.data.datasets[index].hidden : !meta.hidden;
+        charts.trend.toggleDataVisibility(index);
+        item.classList.toggle('disabled', meta.hidden);
+        charts.trend.update();
+      });
+    });
+  }
 }
 
 function destroyCharts() {
