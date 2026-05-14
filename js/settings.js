@@ -1,6 +1,7 @@
 // ── SETTINGS MODAL ────────────────────────────────────────────────────────────
 function openSettings() {
   renderTeamsEditor();
+  syncDailyLimitToggle();
   document.getElementById('settingsModal').classList.add('open');
   document.getElementById('saveStatus').textContent = '';
 }
@@ -13,6 +14,21 @@ function closeSettings() {
 document.getElementById('settingsModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeSettings();
 });
+
+// ── DAILY LIMIT TOGGLE ────────────────────────────────────────────────────────
+function syncDailyLimitToggle() {
+  const btn   = document.getElementById('toggleDailyLimitSwitch');
+  const thumb = document.getElementById('toggleDailyLimitThumb');
+  const enabled = appConfig.showDailyLimit ?? true;
+  btn.style.background = enabled ? 'var(--accent)' : 'var(--border)';
+  thumb.style.left     = enabled ? '16px' : '2px';
+}
+
+function toggleDailyLimitSetting() {
+  appConfig.showDailyLimit = !appConfig.showDailyLimit;
+  syncDailyLimitToggle();
+  applyDailyLimitVisibility();
+}
 
 // ── TOKEN ─────────────────────────────────────────────────────────────────────
 function saveTokenLocally() {

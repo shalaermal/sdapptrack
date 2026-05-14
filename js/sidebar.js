@@ -94,7 +94,7 @@ function renderOverview() {
       <div class="team-card">
         <div class="team-card-title">
           ${team}
-          <span style="color:var(--text3);font-weight:400">(${teamTasks.length}) · lim ${info.limit}</span>
+          <span style="color:var(--text3);font-weight:400">(${teamTasks.length})${showLimit ? ` · lim ${info.limit}` : ''}</span>
         </div>
         ${memberRows}
       </div>`;

@@ -52,14 +52,6 @@
     <label for="teamFilter">Team</label>
     <select id="teamFilter"><option value="All">All Teams</option></select>
   </div>
-  <div class="filter-group">
-    <label>Daily Limit</label>
-    <div class="toggle-wrap">
-      <div class="toggle" id="toggleBtn" onclick="toggleDailyLimit()" style="background:var(--accent)">
-        <div class="toggle-thumb" id="toggleThumb" style="left:16px"></div>
-      </div>
-    </div>
-  </div>
   <div class="search-wrap">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" id="searchInput" placeholder="Search order / person…">
@@ -97,6 +89,17 @@
       <p class="token-note">Token is stored only in your browser (localStorage). Required only when saving changes. Each admin uses their own token.</p>
       <div id="teamsEditor"></div>
       <button class="btn btn-secondary" onclick="addTeam()" style="margin-top:4px">+ Add Team</button>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+          <label style="margin:0;flex:1">Show Daily Limit</label>
+          <div class="toggle-wrap">
+            <div class="toggle" id="toggleDailyLimitSwitch" onclick="toggleDailyLimitSetting()" style="background:var(--accent)">
+              <div class="toggle-thumb" id="toggleDailyLimitThumb" style="left:16px"></div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:4px 0 0 0;font-size:11px;color:var(--text3)">Display daily limit sections for each team member</p>
+      </div>
     </div>
     <div class="modal-footer">
       <span class="save-status" id="saveStatus"></span>

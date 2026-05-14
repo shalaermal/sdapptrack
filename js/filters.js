@@ -137,13 +137,9 @@ function populateDays() {
 }
 
 // ── TOGGLE DAILY LIMIT ────────────────────────────────────────────────────────
-function toggleDailyLimit() {
-  showLimit = !showLimit;
-  const btn   = document.getElementById('toggleBtn');
-  const thumb = document.getElementById('toggleThumb');
-  btn.style.background = showLimit ? 'var(--accent)' : 'var(--border)';
-  thumb.style.left     = showLimit ? '16px' : '2px';
-  document.querySelectorAll('.per-day-section')
+function applyDailyLimitVisibility() {
+  showLimit = appConfig.showDailyLimit ?? true;
+  document.querySelectorAll('.per-day-section, .daily-limit-label')
     .forEach(s => s.style.display = showLimit ? '' : 'none');
 }
 

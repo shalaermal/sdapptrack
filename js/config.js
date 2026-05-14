@@ -5,6 +5,7 @@ const GH_FILE  = 'config.json';
 
 // ── DEFAULT CONFIG ────────────────────────────────────────────────────────────
 const DEFAULT_CONFIG = {
+  showDailyLimit: true,
   teams: {
     "FTTT": {
       limit: 7,
@@ -137,4 +138,5 @@ async function init() {
 
   await loadConfig();
   populateTeamFilter();
+  applyDailyLimitVisibility();
 }

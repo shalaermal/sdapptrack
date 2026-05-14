@@ -149,12 +149,16 @@ function renderDetail(name) {
     }).join('');
 
   // ── Render HTML ────────────────────────────────────────────────────────────
+  const limitHeader = showLimit
+    ? ` · Daily limit: <strong class="daily-limit-label" style="color:var(--accent)">${limit}</strong>`
+    : '';
+
   content.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       <div>
         <div style="font-size:18px;font-weight:600">${name}</div>
         <div style="font-size:11px;color:var(--text2);font-family:var(--mono);margin-top:2px">
-          ${getTeam(name)} Team · Daily limit: <strong style="color:var(--accent)">${limit}</strong>
+          ${getTeam(name)} Team${limitHeader}
         </div>
       </div>
       <button onclick="selectedOwner=null;renderOverview();renderSidebar()"
@@ -177,7 +181,7 @@ function renderDetail(name) {
         <div class="chart-wrap"><canvas id="chartType"></canvas></div>
       </div>
       <div class="chart-card">
-        <h4>Daily Completions (limit: ${limit})</h4>
+        <h4>Daily Completions${showLimit ? ` (limit: ${limit})` : ''}</h4>
         <div class="chart-wrap"><canvas id="chartDay"></canvas></div>
       </div>
     </div>
