@@ -2,6 +2,7 @@
   "teams": {
     "FTTT": {
       "limit": 7,
+      "slaDays": 4,
       "members": [
         "Fitim Ahmeti",
         "Shpend Ajeti",
@@ -15,6 +16,7 @@
     },
     "Data": {
       "limit": 10,
+      "slaDays": 4,
       "members": [
         "Berat Gubavci",
         "Besar Ahmeti",
@@ -32,6 +34,7 @@
     },
     "CDE": {
       "limit": 12,
+      "slaDays": 4,
       "members": [
         "Burim Shala",
         "Rina Ademi",

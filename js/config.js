@@ -8,17 +8,20 @@ const DEFAULT_CONFIG = {
   teams: {
     "FTTT": {
       limit: 7,
+      slaDays: 4,
       members: ["Fitim Ahmeti","Shpend Ajeti","Festim Asllani","Tim Corey",
                 "Vlora Ibrahimi","Vanja Petrushevski","Edi Sermaxhaj","Ermal Shala"]
     },
     "Data": {
       limit: 10,
+      slaDays: 4,
       members: ["Berat Gubavci","Besar Ahmeti","Fitore Behrami","Arlinda Neziri",
                 "Jetart Aliu","Melos Doberdoli","Genc Ajeti","Lendrit Islami",
                 "Furkan Mani","Petar Siljanoski","Maksim Babovikj"]
     },
     "CDE": {
       limit: 12,
+      slaDays: 4,
       members: ["Burim Shala","Rina Ademi","Zaim Shaqiri","Vllaznim Shaljani",
                 "Adelina Neziri","Jon Barnett","Fatlum Rashiti","Arianit Plakaj","Agnesa Haxholli"]
     }
@@ -62,6 +65,11 @@ function getLimit(name) {
   return appConfig.teams[team]?.limit ?? 7;
 }
 
+function getSlaDays(name) {
+  const team = getTeam(name);
+  return appConfig.teams[team]?.slaDays ?? 4;
+}
+
 function getTaskGroup(tp) {
   tp = (tp || '').trim();
   for (const [grp, types] of Object.entries(TASK_GROUPS)) {
@@ -81,14 +89,13 @@ function isEscalated(t) {
       || (t['Service Delivery Order - Escalated Order?'] || '').toLowerCase() === 'yes';
 }
 
-const SLA_DAYS = 4;
-
 function slaStatus(t) {
   const assign   = parseDate(t['Task Assignment Date']);
   const complete = parseDate(t['Actual Complete Date']);
   if (!assign || !complete) return 'unknown';
 
-  const deadline = new Date(assign.getTime() + SLA_DAYS * 864e5);
+  const slaDays = getSlaDays(cleanName(t['Task Owner']));
+  const deadline = new Date(assign.getTime() + slaDays * 864e5);
   return complete <= deadline ? 'ok' : 'late';
 }
 

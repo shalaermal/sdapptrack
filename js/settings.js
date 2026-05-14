@@ -41,6 +41,12 @@ function renderTeamsEditor() {
                 onchange="appConfig.teams['${team}'].limit = parseInt(this.value) || 1"
                 title="Min tasks per day to count as a good day">
             </div>
+            <div class="limit-row">
+              SLA days:
+              <input type="number" class="limit-input" value="${info.slaDays ?? 4}" min="1" max="30"
+                onchange="appConfig.teams['${team}'].slaDays = parseInt(this.value) || 4"
+                title="Number of days allowed before SLA is late">
+            </div>
           </div>
           <button class="btn btn-danger btn-sm" onclick="removeTeam('${team}')">Remove Team</button>
         </div>
@@ -94,7 +100,7 @@ function removeMember(team, name) {
 function addTeam() {
   const name = prompt('New team name:');
   if (!name || appConfig.teams[name]) return;
-  appConfig.teams[name] = { limit: 7, members: [] };
+  appConfig.teams[name] = { limit: 7, slaDays: 4, members: [] };
   renderTeamsEditor();
 }
 
