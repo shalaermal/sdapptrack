@@ -11,11 +11,40 @@ document.getElementById('csvFile').addEventListener('change', e => {
     skipEmptyLines: true,
     complete: res => {
       allData = res.data.filter(r => r['Actual Complete Date'] && r['Task Owner']);
+      normalizeData();
       populateFilters();
       applyFilters();
     }
   });
 });
+
+function normalizeData() {
+  allData.forEach(r => {
+    const owner = cleanName(r['Task Owner']);
+    r._owner = owner;
+    r._ownerLower = owner.toLowerCase();
+    r._date = parseDate(r['Actual Complete Date']);
+    r._ponLower = (r['Service Delivery Order - Customer PON'] || '').toLowerCase();
+
+    if (r._date) {
+      r._year = String(r._date.getFullYear());
+      r._monthLabel = r._date.toLocaleString('default', { month: 'long', year: 'numeric' });
+      r._day = String(r._date.getDate()).padStart(2, '0');
+    } else {
+      r._year = '';
+      r._monthLabel = '';
+      r._day = '';
+    }
+  });
+}
+
+function debounce(fn, delay) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), delay);
+  };
+}
 
 let selectedYears = new Set();
 let availableYears = [];
@@ -25,8 +54,8 @@ function populateFilters() {
   // Years
   const years = [...new Set(
     allData
-      .filter(r => isRegisteredOwner(cleanName(r['Task Owner'])))
-      .map(r => parseDate(r['Actual Complete Date'])?.getFullYear())
+      .filter(r => r._date && isRegisteredOwner(r._owner))
+      .map(r => r._year)
       .filter(Boolean)
   )].sort((a, b) => b - a);
 
@@ -53,14 +82,9 @@ function populateTeamFilter() {
 function populateMonths() {
   availableMonths = [...new Set(
     allData
-      .filter(r => {
-        const d = parseDate(r['Actual Complete Date']);
-        const name = cleanName(r['Task Owner']);
-        return d && isRegisteredOwner(name)
-            && (!selectedYears.size || selectedYears.has(d.getFullYear().toString()));
-      })
-      .map(r => parseDate(r['Actual Complete Date'])
-        .toLocaleString('default', { month: 'long', year: 'numeric' }))
+      .filter(r => r._date && isRegisteredOwner(r._owner)
+        && (!selectedYears.size || selectedYears.has(r._year)))
+      .map(r => r._monthLabel)
   )].sort((a, b) => new Date(a) - new Date(b));
 
   // Default → latest month
@@ -176,16 +200,10 @@ document.addEventListener('click', e => {
 function populateDays() {
   const days = [...new Set(
     allData
-      .filter(r => {
-        const d = parseDate(r['Actual Complete Date']);
-        if (!d) return false;
-        const name = cleanName(r['Task Owner']);
-        const ml = d.toLocaleString('default', { month: 'long', year: 'numeric' });
-        return isRegisteredOwner(name)
-            && (!selectedYears.size || selectedYears.has(d.getFullYear().toString()))
-            && (selectedMonths.size === 0 || selectedMonths.has(ml));
-      })
-      .map(r => parseDate(r['Actual Complete Date']).getDate().toString().padStart(2, '0'))
+      .filter(r => r._date && isRegisteredOwner(r._owner)
+        && (!selectedYears.size || selectedYears.has(r._year))
+        && (selectedMonths.size === 0 || selectedMonths.has(r._monthLabel)))
+      .map(r => r._day)
   )].sort();
 
   const df = document.getElementById('dayFilter');
@@ -203,7 +221,8 @@ function applyDailyLimitVisibility() {
 // ── EVENT LISTENERS ───────────────────────────────────────────────────────────
 document.getElementById('dayFilter').addEventListener('change', applyFilters);
 document.getElementById('teamFilter').addEventListener('change', applyFilters);
-document.getElementById('searchInput').addEventListener('input', applyFilters);
+const debouncedApplyFilters = debounce(applyFilters, 180);
+document.getElementById('searchInput').addEventListener('input', debouncedApplyFilters);
 
 // ── APPLY FILTERS ─────────────────────────────────────────────────────────────
 function applyFilters() {
@@ -212,20 +231,17 @@ function applyFilters() {
   const search = document.getElementById('searchInput').value.toLowerCase().trim();
 
   filteredData = allData.filter(r => {
-    const d = parseDate(r['Actual Complete Date']);
-    if (!d) return false;
-
-    const ml    = d.toLocaleString('default', { month: 'long', year: 'numeric' });
-    const owner = cleanName(r['Task Owner']);
+    if (!r._date) return false;
+    const owner = r._owner;
 
     if (!isRegisteredOwner(owner)) return false;
-    if (selectedYears.size > 0 && !selectedYears.has(d.getFullYear().toString())) return false;
-    if (selectedMonths.size > 0 && !selectedMonths.has(ml)) return false;
-    if (dy !== 'All' && d.getDate().toString().padStart(2, '0') !== dy) return false;
+    if (selectedYears.size > 0 && !selectedYears.has(r._year)) return false;
+    if (selectedMonths.size > 0 && !selectedMonths.has(r._monthLabel)) return false;
+    if (dy !== 'All' && r._day !== dy) return false;
     if (team !== 'All' && !(appConfig.teams[team]?.members || []).includes(owner)) return false;
     if (search) {
-      const pon = (r['Service Delivery Order - Customer PON'] || '').toLowerCase();
-      if (!owner.toLowerCase().includes(search) && !pon.includes(search)) return false;
+      const pon = r._ponLower;
+      if (!r._ownerLower.includes(search) && !pon.includes(search)) return false;
     }
     return true;
   });
