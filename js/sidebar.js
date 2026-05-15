@@ -85,7 +85,7 @@ function renderOverview() {
           <div class="team-member-row">
             <span>${m}</span>
             <span style="font-family:var(--mono);color:var(--accent)">
-              ${cnt}${esc > 0 ? `<span style="color:var(--text3);font-size:10px"> · ${esc}e</span>` : ''}
+              ${cnt}<span style="color:var(--text3);font-size:10px"> · ${esc}e</span>
             </span>
           </div>`;
       }).join('');
