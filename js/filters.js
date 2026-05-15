@@ -24,7 +24,10 @@ let availableYears = [];
 function populateFilters() {
   // Years
   const years = [...new Set(
-    allData.map(r => parseDate(r['Actual Complete Date'])?.getFullYear()).filter(Boolean)
+    allData
+      .filter(r => isRegisteredOwner(cleanName(r['Task Owner'])))
+      .map(r => parseDate(r['Actual Complete Date'])?.getFullYear())
+      .filter(Boolean)
   )].sort((a, b) => b - a);
 
   availableYears = years.map(String);
@@ -52,7 +55,9 @@ function populateMonths() {
     allData
       .filter(r => {
         const d = parseDate(r['Actual Complete Date']);
-        return d && (!selectedYears.size || selectedYears.has(d.getFullYear().toString()));
+        const name = cleanName(r['Task Owner']);
+        return d && isRegisteredOwner(name)
+            && (!selectedYears.size || selectedYears.has(d.getFullYear().toString()));
       })
       .map(r => parseDate(r['Actual Complete Date'])
         .toLocaleString('default', { month: 'long', year: 'numeric' }))
@@ -174,8 +179,10 @@ function populateDays() {
       .filter(r => {
         const d = parseDate(r['Actual Complete Date']);
         if (!d) return false;
+        const name = cleanName(r['Task Owner']);
         const ml = d.toLocaleString('default', { month: 'long', year: 'numeric' });
-        return (!selectedYears.size || selectedYears.has(d.getFullYear().toString()))
+        return isRegisteredOwner(name)
+            && (!selectedYears.size || selectedYears.has(d.getFullYear().toString()))
             && (selectedMonths.size === 0 || selectedMonths.has(ml));
       })
       .map(r => parseDate(r['Actual Complete Date']).getDate().toString().padStart(2, '0'))
@@ -211,6 +218,7 @@ function applyFilters() {
     const ml    = d.toLocaleString('default', { month: 'long', year: 'numeric' });
     const owner = cleanName(r['Task Owner']);
 
+    if (!isRegisteredOwner(owner)) return false;
     if (selectedYears.size > 0 && !selectedYears.has(d.getFullYear().toString())) return false;
     if (selectedMonths.size > 0 && !selectedMonths.has(ml)) return false;
     if (dy !== 'All' && d.getDate().toString().padStart(2, '0') !== dy) return false;

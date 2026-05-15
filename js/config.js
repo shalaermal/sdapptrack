@@ -61,6 +61,10 @@ function getTeam(name) {
   return 'Other';
 }
 
+function isRegisteredOwner(name) {
+  return getTeam(name) !== 'Other';
+}
+
 function getLimit(name) {
   const team = getTeam(name);
   return appConfig.teams[team]?.limit ?? 7;
