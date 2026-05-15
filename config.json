@@ -1,4 +1,5 @@
 {
+  "showDailyLimit": true,
   "teams": {
     "FTTT": {
       "limit": 7,
