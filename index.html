@@ -24,9 +24,20 @@
   </div>
 </div>
 <div class="filters-bar">
-  <div class="filter-group">
-    <label for="yearFilter">Year</label>
-    <select id="yearFilter"><option value="">—</option></select>
+  <div class="filter-group" id="yearFilterWrap" style="position:relative">
+    <label>Year</label>
+    <div class="month-dd-btn" onclick="toggleYearDD()">
+      <span id="yearBtnLabel">All Years</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="month-dd-panel" id="yearDropdown">
+      <div class="month-dd-header">
+        <span onclick="selectAllYears()">All</span>
+        <span style="color:var(--text3)">·</span>
+        <span onclick="clearYears()">Clear</span>
+      </div>
+      <div id="yearCheckList"></div>
+    </div>
   </div>
   <div class="filter-group" id="monthFilterWrap" style="position:relative">
     <label>Month</label>

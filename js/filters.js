@@ -17,6 +17,9 @@ document.getElementById('csvFile').addEventListener('change', e => {
   });
 });
 
+let selectedYears = new Set();
+let availableYears = [];
+
 // ── POPULATE ALL FILTERS ──────────────────────────────────────────────────────
 function populateFilters() {
   // Years
@@ -24,11 +27,13 @@ function populateFilters() {
     allData.map(r => parseDate(r['Actual Complete Date'])?.getFullYear()).filter(Boolean)
   )].sort((a, b) => b - a);
 
-  const yf = document.getElementById('yearFilter');
-  yf.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
-  const cur = new Date().getFullYear();
-  if (years.includes(cur)) yf.value = cur;
+  availableYears = years.map(String);
+  const cur = new Date().getFullYear().toString();
+  const defaultYear = availableYears.includes(cur) ? cur : availableYears[0];
+  selectedYears = defaultYear ? new Set([defaultYear]) : new Set();
 
+  renderYearList();
+  updateYearLabel();
   populateMonths();
   populateTeamFilter();
 }
@@ -43,13 +48,11 @@ function populateTeamFilter() {
 
 // ── MONTHS ────────────────────────────────────────────────────────────────────
 function populateMonths() {
-  const yr = document.getElementById('yearFilter').value;
-
   availableMonths = [...new Set(
     allData
       .filter(r => {
         const d = parseDate(r['Actual Complete Date']);
-        return d && (!yr || d.getFullYear().toString() === yr);
+        return d && (!selectedYears.size || selectedYears.has(d.getFullYear().toString()));
       })
       .map(r => parseDate(r['Actual Complete Date'])
         .toLocaleString('default', { month: 'long', year: 'numeric' }))
@@ -70,6 +73,51 @@ function renderMonthList() {
         onchange="toggleMonth('${m}')" style="accent-color:var(--accent);cursor:pointer">
       ${m}
     </label>`).join('');
+}
+
+function renderYearList() {
+  const list = document.getElementById('yearCheckList');
+  list.innerHTML = availableYears.map(y => `
+    <label class="month-check-item">
+      <input type="checkbox" ${selectedYears.has(y) ? 'checked' : ''}
+        onchange="toggleYear('${y}')" style="accent-color:var(--accent);cursor:pointer">
+      ${y}
+    </label>`).join('');
+}
+
+function toggleYear(y) {
+  selectedYears.has(y) ? selectedYears.delete(y) : selectedYears.add(y);
+  updateYearLabel();
+  populateMonths();
+  applyFilters();
+}
+
+function selectAllYears() {
+  selectedYears = new Set(availableYears);
+  renderYearList();
+  updateYearLabel();
+  populateMonths();
+  applyFilters();
+}
+
+function clearYears() {
+  selectedYears.clear();
+  renderYearList();
+  updateYearLabel();
+  populateMonths();
+  applyFilters();
+}
+
+function updateYearLabel() {
+  const lbl = document.getElementById('yearBtnLabel');
+  if (!selectedYears.size)                          lbl.textContent = 'None';
+  else if (selectedYears.size === availableYears.length) lbl.textContent = 'All Years';
+  else if (selectedYears.size === 1)                lbl.textContent = [...selectedYears][0];
+  else                                               lbl.textContent = `${selectedYears.size} years`;
+}
+
+function toggleYearDD() {
+  document.getElementById('yearDropdown').classList.toggle('open');
 }
 
 function toggleMonth(m) {
@@ -107,25 +155,27 @@ function toggleMonthDD() {
   document.getElementById('monthDropdown').classList.toggle('open');
 }
 
-// Close month dropdown when clicking outside
+// Close year/month dropdowns when clicking outside
 document.addEventListener('click', e => {
-  const wrap = document.getElementById('monthFilterWrap');
-  if (wrap && !wrap.contains(e.target)) {
+  const monthWrap = document.getElementById('monthFilterWrap');
+  if (monthWrap && !monthWrap.contains(e.target)) {
     document.getElementById('monthDropdown').classList.remove('open');
+  }
+  const yearWrap = document.getElementById('yearFilterWrap');
+  if (yearWrap && !yearWrap.contains(e.target)) {
+    document.getElementById('yearDropdown').classList.remove('open');
   }
 });
 
 // ── DAYS ──────────────────────────────────────────────────────────────────────
 function populateDays() {
-  const yr = document.getElementById('yearFilter').value;
-
   const days = [...new Set(
     allData
       .filter(r => {
         const d = parseDate(r['Actual Complete Date']);
         if (!d) return false;
         const ml = d.toLocaleString('default', { month: 'long', year: 'numeric' });
-        return (!yr || d.getFullYear().toString() === yr)
+        return (!selectedYears.size || selectedYears.has(d.getFullYear().toString()))
             && (selectedMonths.size === 0 || selectedMonths.has(ml));
       })
       .map(r => parseDate(r['Actual Complete Date']).getDate().toString().padStart(2, '0'))
@@ -144,14 +194,12 @@ function applyDailyLimitVisibility() {
 }
 
 // ── EVENT LISTENERS ───────────────────────────────────────────────────────────
-document.getElementById('yearFilter').addEventListener('change', () => { populateMonths(); applyFilters(); });
 document.getElementById('dayFilter').addEventListener('change', applyFilters);
 document.getElementById('teamFilter').addEventListener('change', applyFilters);
 document.getElementById('searchInput').addEventListener('input', applyFilters);
 
 // ── APPLY FILTERS ─────────────────────────────────────────────────────────────
 function applyFilters() {
-  const yr     = document.getElementById('yearFilter').value;
   const dy     = document.getElementById('dayFilter').value;
   const team   = document.getElementById('teamFilter').value;
   const search = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -163,7 +211,7 @@ function applyFilters() {
     const ml    = d.toLocaleString('default', { month: 'long', year: 'numeric' });
     const owner = cleanName(r['Task Owner']);
 
-    if (yr && d.getFullYear().toString() !== yr) return false;
+    if (selectedYears.size > 0 && !selectedYears.has(d.getFullYear().toString())) return false;
     if (selectedMonths.size > 0 && !selectedMonths.has(ml)) return false;
     if (dy !== 'All' && d.getDate().toString().padStart(2, '0') !== dy) return false;
     if (team !== 'All' && !(appConfig.teams[team]?.members || []).includes(owner)) return false;
