@@ -32,10 +32,8 @@ const DEFAULT_CONFIG = {
 // ── TASK GROUPS ───────────────────────────────────────────────────────────────
 const TASK_GROUPS = {
   "NOC":        ["NOC FTTT", "NOC_FTTT"],
-  "FTTT_UP":    ["FTTT_UP"],
-  "Disconnect": ["DISCFTTT", "DNOC FTTT", "DNOC_PROV"],
-  "TESTFTTT":   ["TESTFTTT"],
-  "SIS":        ["Build SIS Record", "Build Ocular IP & SIS Record"]
+  "SIS":        ["Build SIS Record", "Build Ocular IP & SIS Record"],
+  "CPI":        ["CPI150", "CPI200", "CPI300", "CPI501", "CPI801", "CPI850", "CPI: Pending Tirks Document", "CPI: TTU Hold"],
 };
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -80,6 +78,7 @@ function getTaskGroup(tp) {
   for (const [grp, types] of Object.entries(TASK_GROUPS)) {
     if (types.includes(tp)) return grp;
   }
+  if (tp.toUpperCase().startsWith('CPI')) return 'CPI';  // ← shto këtë
   return tp || 'Other';
 }
 
