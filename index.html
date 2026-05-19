@@ -12,8 +12,12 @@
 <div class="topbar">
   <div class="topbar-title">⬡ SDAPP Task Tracker</div>
   <div class="topbar-right">
-    <span id="fileName">No file loaded</span>
-    <label class="upload-btn" for="csvFile">
+    <span id="fileName">Loading from Google Sheets…</span>
+    <button class="upload-btn" id="sheetsBtn" onclick="loadFromSheets()" title="Refresh data from Google Sheets">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      Refresh
+    </button>
+    <label class="upload-btn" for="csvFile" style="background:var(--surface2);border:1px solid var(--border);color:var(--text2)">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Upload CSV
     </label>
@@ -79,8 +83,8 @@
   <div class="content" id="contentArea">
     <div class="empty">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      <span>Upload a CSV file to get started</span>
-      <span style="font-size:10px;color:var(--text3)">Then select a person from the sidebar</span>
+      <span>Loading data from Google Sheets…</span>
+      <span style="font-size:10px;color:var(--text3)">Please wait</span>
     </div>
   </div>
 </div>
