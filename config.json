@@ -1,8 +1,8 @@
 {
-  "showDailyLimit": true,
+  "showDailyLimit": false,
   "teams": {
     "FTTT": {
-      "limit": 7,
+      "limit": 10,
       "slaDays": 4,
       "members": [
         "Fitim Ahmeti",
@@ -16,7 +16,7 @@
       ]
     },
     "Data": {
-      "limit": 10,
+      "limit": 12,
       "slaDays": 4,
       "members": [
         "Berat Gubavci",
@@ -28,7 +28,8 @@
         "Genc Ajeti",
         "Lendrit Islami",
         "Furkan Mani",
-        "Maksim Babovikj"
+        "Maksim Babovikj",
+        "Lumi Sahiti"
       ]
     },
     "CDE": {
